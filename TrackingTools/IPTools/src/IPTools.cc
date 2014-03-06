@@ -32,7 +32,7 @@ namespace IPTools
         GlobalPoint vertexPosition    = RecoVertex::convertPos(vertex.position());
         GlobalError vertexPositionErr = RecoVertex::convertError(vertex.error());
         return pair<bool,Measurement1D>(true,distanceComputer.distance(VertexState(vertexPosition,vertexPositionErr), VertexState(refPoint, refPointErr)));
-   }
+    }
 
     std::pair<bool,Measurement1D> absoluteImpactParameter3D(const reco::TransientTrack & transientTrack, const  reco::Vertex & vertex)
     {
@@ -49,7 +49,7 @@ namespace IPTools
     
   pair<bool,Measurement1D> signedTransverseImpactParameter(const TransientTrack & track,
                                                            const GlobalVector & direction, const  Vertex & vertex){
-    //Extrapolate to closest point on transverse plane
+    //Extrapolate to closest point in transverse plane
     TransverseImpactPointExtrapolator extrapolator(track.field());
     TrajectoryStateOnSurface closestOnTransversePlaneState = extrapolator.extrapolate(track.impactPointState(),RecoVertex::convertPos(vertex.position()));
     
@@ -70,7 +70,7 @@ namespace IPTools
 
   pair<bool,Measurement1D> signedImpactParameter3D(const TransientTrack & track,
                                                            const GlobalVector & direction, const  Vertex & vertex){
-    //Extrapolate to closest point on transverse plane
+    //Extrapolate to closest point in 3D
     AnalyticalImpactPointExtrapolator extrapolator(track.field());
     TrajectoryStateOnSurface closestIn3DSpaceState = extrapolator.extrapolate(track.impactPointState(),RecoVertex::convertPos(vertex.position()));
 
@@ -94,7 +94,7 @@ namespace IPTools
   pair<bool,Measurement1D> signedDecayLength3D(const   TrajectoryStateOnSurface & closestToJetState,
 					       const GlobalVector & direction, const  Vertex & vertex)  {
 
-    //Check if extrapolation has been successfull
+    //Check if extrapolation has been successful
     if(!closestToJetState.isValid()) {
       return pair<bool,Measurement1D>(false,Measurement1D(0.,0.));
     }
@@ -133,7 +133,7 @@ namespace IPTools
   pair<bool,Measurement1D> linearizedSignedImpactParameter3D(const   TrajectoryStateOnSurface & closestToJetState ,
 						   const GlobalVector & direction, const  Vertex & vertex)
   {
-    //Check if extrapolation has been successfull
+    //Check if extrapolation has been successful
     if(!closestToJetState.isValid()) {
       return pair<bool,Measurement1D>(false,Measurement1D(0.,0.));
     }
@@ -203,34 +203,28 @@ namespace IPTools
     //FIXME
     float weight=0.;//vertex.trackWeight(track);
 
-    TrajectoryStateOnSurface stateAtOrigin = track.impactPointState(); 
-    if(!stateAtOrigin.isValid())
+    TrajectoryStateOnSurface closestToJetState = IPTools::closestApproachToJet(track.impactPointState(), vertex, direction, track.field());
+    if(!closestToJetState.isValid())
       {
 	//TODO: throw instead?
 	return pair<bool,Measurement1D>(false,Measurement1D(0.,0.));
       }
    
-    //get the Track line at origin
-    Line::PositionType posTrack(stateAtOrigin.globalPosition());
-    Line::DirectionType dirTrack((stateAtOrigin.globalMomentum()).unit());
-    Line trackLine(posTrack,dirTrack);
     // get the Jet  line 
-    // Vertex vertex(vertex);
     GlobalVector jetVector = direction.unit();    
     Line::PositionType posJet(GlobalPoint(vertex.x(),vertex.y(),vertex.z()));
     Line::DirectionType dirJet(jetVector);
     Line jetLine(posJet,dirJet);
   
-    // now compute the distance between the two lines
+    // now compute the distance
     // If the track has been used to refit the Primary vertex then sign it positively, otherwise negative
-    double theDistanceToJetAxis = (jetLine.distance(trackLine)).mag();
+    double theDistanceToJetAxis = (jetLine.distance(closestToJetState.globalPosition())).mag();
     if (weight<1) theDistanceToJetAxis= -theDistanceToJetAxis;
 
-    // ... and the flight distance along the Jet axis.
-    GlobalPoint  V = jetLine.position();    
-    GlobalVector Q = dirTrack - jetVector.dot(dirTrack) * jetVector;
-    GlobalVector P = jetVector - jetVector.dot(dirTrack) * dirTrack;
-    double theDistanceAlongJetAxis = P.dot(V-posTrack)/Q.dot(dirTrack);
+    // ... and the flight distance along the Jet axis
+    GlobalPoint vertexPosition(vertex.x(),vertex.y(),vertex.z());
+    GlobalVector flightDistance(closestToJetState.globalPosition()-vertexPosition);
+    double theDistanceAlongJetAxis = jetVector.dot(flightDistance);
 
     //
     // get the covariance matrix of the vertex and compute the error on theDistanceToJetAxis
@@ -242,12 +236,12 @@ namespace IPTools
 
 
     //FIXME: error not computed.
-    GlobalVector H((jetVector.cross(dirTrack).unit()));
-    CLHEP::HepVector Hh(3);
-    Hh[0] = H.x();
-    Hh[1] = H.y();
-    Hh[2] = H.z();
-    
+    /* GlobalVector H((jetVector.cross(dirTrack).unit()));
+       CLHEP::HepVector Hh(3);
+       Hh[0] = H.x();
+       Hh[1] = H.y();
+       Hh[2] = H.z();
+    */
     //  theLDist_err = sqrt(vertexError.similarity(Hh));
 
     //    cout << "distance to jet axis : "<< theDistanceToJetAxis <<" and error : "<< theLDist_err<<endl;
