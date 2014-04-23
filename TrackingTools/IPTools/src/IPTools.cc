@@ -261,5 +261,77 @@ namespace IPTools
   
     return pair<double,Measurement1D> (theDistanceAlongJetAxis,DTJA);
   }
+  
+  
+  pair<double,Measurement1D> jetTrackDistanceLinearized(const TransientTrack & track, const GlobalVector & direction, const Vertex & vertex) {
+    double  theLDist_err(0.);
+  
+    //FIXME
+    float weight=0.;//vertex.trackWeight(track);
+
+    TrajectoryStateOnSurface stateAtOrigin = track.impactPointState(); 
+    if(!stateAtOrigin.isValid())
+      {
+       //TODO: throw instead?
+       return pair<bool,Measurement1D>(false,Measurement1D(0.,0.));
+      }
+   
+    //get the Track line at origin
+    Line::PositionType posTrack(stateAtOrigin.globalPosition());
+    Line::DirectionType dirTrack((stateAtOrigin.globalMomentum()).unit());
+    Line trackLine(posTrack,dirTrack);
+    // get the Jet  line 
+    // Vertex vertex(vertex);
+    GlobalVector jetVector = direction.unit();    
+    Line::PositionType posJet(GlobalPoint(vertex.x(),vertex.y(),vertex.z()));
+    Line::DirectionType dirJet(jetVector);
+    Line jetLine(posJet,dirJet);
+  
+    // now compute the distance between the two lines
+    // If the track has been used to refit the Primary vertex then sign it positively, otherwise negative
+    double theDistanceToJetAxis = (jetLine.distance(trackLine)).mag();
+    if (weight<1) theDistanceToJetAxis= -theDistanceToJetAxis;
+
+    // ... and the flight distance along the Jet axis.
+    GlobalPoint  V = jetLine.position();    
+    GlobalVector Q = dirTrack - jetVector.dot(dirTrack) * jetVector;
+    GlobalVector P = jetVector - jetVector.dot(dirTrack) * dirTrack;
+    double theDistanceAlongJetAxis = P.dot(V-posTrack)/Q.dot(dirTrack);
+
+    //
+    // get the covariance matrix of the vertex and compute the error on theDistanceToJetAxis
+    //
+    
+    ////AlgebraicSymMatrix vertexError = vertex.positionError().matrix();
+
+    // build the vector of closest approach between lines
+
+
+    //FIXME: error not computed.
+    GlobalVector H((jetVector.cross(dirTrack).unit()));
+    CLHEP::HepVector Hh(3);
+    Hh[0] = H.x();
+    Hh[1] = H.y();
+    Hh[2] = H.z();
+    
+    //  theLDist_err = sqrt(vertexError.similarity(Hh));
+
+    //    cout << "distance to jet axis : "<< theDistanceToJetAxis <<" and error : "<< theLDist_err<<endl;
+    // Now the impact parameter ...
+
+    /*    GlobalPoint T0 = track.position();
+         GlobalVector D = (T0-V)- (T0-V).dot(dir) * dir;
+         double IP = D.mag();    
+         GlobalVector Dold = distance(aTSOS, aJet.vertex(), jetDirection);
+         double IPold = Dold.mag();
+    */
+
+
+
+  
+    Measurement1D DTJA(theDistanceToJetAxis,theLDist_err);
+  
+    return pair<double,Measurement1D> (theDistanceAlongJetAxis,DTJA);
+  }
 
 }

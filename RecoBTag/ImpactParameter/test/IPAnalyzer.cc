@@ -33,6 +33,9 @@
 #include "DataFormats/JetReco/interface/JetTracksAssociation.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "TrackingTools/IPTools/interface/IPTools.h"
 
 #include "DataFormats/Math/interface/Vector3D.h"
 
@@ -40,6 +43,11 @@
 #include "Math/GenVector/VectorUtil.h"
 #include "Math/GenVector/PxPyPzE4D.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "TH1D.h"
+#include "TH2D.h"
 
 // system include files
 #include <string>
@@ -61,8 +69,10 @@ class IPAnalyzer : public edm::EDAnalyzer {
 
    private:
      edm::InputTag m_ipassoc;
-     edm::InputTag m_assoc;
-     edm::InputTag m_jets;
+     
+     edm::Service<TFileService> fs;
+     
+     TH2D *h2_DTJA_Helix_vs_Linearized;
 };
 
 //
@@ -70,9 +80,9 @@ class IPAnalyzer : public edm::EDAnalyzer {
 //
 IPAnalyzer::IPAnalyzer(const edm::ParameterSet& iConfig)
 {
-  m_jets  = iConfig.getParameter<edm::InputTag>("jets");
-  m_assoc = iConfig.getParameter<edm::InputTag>("association");
   m_ipassoc = iConfig.getParameter<edm::InputTag>("ipassociation");
+  
+  h2_DTJA_Helix_vs_Linearized = fs->make<TH2D>("h2_DTJA_Helix_vs_Linearized",";DTJA (helix) [cm];DTJA (linearized) [cm]", 100, 0, 2, 100, 0, 2);
 }
 
 void
@@ -84,45 +94,37 @@ IPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   Handle<TrackIPTagInfoCollection> ipHandle;
   iEvent.getByLabel(m_ipassoc, ipHandle);
   const TrackIPTagInfoCollection & ip = *(ipHandle.product());
-  cout << "Found " << ip.size() << " TagInfo" << endl;
+  //cout << "Found " << ip.size() << " TagInfo" << endl;
+
+  // get TransientTrackBuilder
+  ESHandle<TransientTrackBuilder> builder;
+  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", builder);
+
+  //cout << boolalpha;
+  //cout << fixed;
 
 
-  cout << boolalpha;
-  cout << fixed;
 
+  TrackIPTagInfoCollection::const_iterator it = ip.begin();
+  for(; it != ip.end(); it++)
+  {
+    //cout << "Jet pt: " << it->jet()->pt() << endl;
+    //cout << "Tot tracks: " << it->tracks().size() << endl;    
+    TrackRefVector selTracks=it->selectedTracks();
+    int n=it->selectedTracks().size();
+    //cout << "Sel tracks: " << n << endl; 
 
+    GlobalVector direction(it->jet()->px(), it->jet()->py(), it->jet()->pz());
 
-   TrackIPTagInfoCollection::const_iterator it = ip.begin();
-   for(; it != ip.end(); it++)
-     {
-      cout << "Jet pt: " << it->jet()->pt() << endl;
-      cout << "Tot tracks: " << it->tracks().size() << endl;    
-      TrackRefVector selTracks=it->selectedTracks();
-      int n=selTracks.size();
-      cout << "Sel tracks: " << n << endl; 
-// false      cout << " Pt  \t d len \t jet dist \t p3d \t p2d\t ip3d \t ip2d " << endl; 
-               GlobalPoint pv(it->primaryVertex()->position().x(),it->primaryVertex()->position().y(),it->primaryVertex()->position().z());
-  cout << pv << " vs " << it->primaryVertex()->position()   << endl;
-   for(int j=0;j< n;j++)
-      {
-        TrackIPTagInfo::TrackIPData data = it->impactParameterData()[j];  
-        cout << selTracks[j]->pt() << "\t";
-        cout << it->probabilities(0)[j] << "\t";
-        cout << it->probabilities(1)[j] << "\t";
-        cout << data.ip3d.value() << "\t";
-        cout << data.ip3d.significance() << "\t";
-        cout << data.distanceToJetAxis.value() << "\t";
-        cout << data.distanceToJetAxis.significance() << "\t";
-        cout << data.distanceToGhostTrack.value() << "\t";
-        cout << data.distanceToGhostTrack.significance() << "\t";
-        cout << data.closestToJetAxis << "\t";
-        cout << (data.closestToJetAxis - pv).mag() << "\t";
-        cout << data.closestToGhostTrack << "\t";
-        cout << (data.closestToGhostTrack - pv).mag() << "\t";
-        cout << data.ip2d.value() << "\t";
-        cout << data.ip2d.significance() <<  endl;     
-      }
+    for(int j=0; j< n;j++)
+    {
+      reco::TransientTrack transientTrack = builder->build(*(it->selectedTracks()[j]));
 
+      double distanceToJetAxis = IPTools::jetTrackDistance(transientTrack, direction, *(it->primaryVertex())).second.value();
+      double distanceToJetAxisLinearized = IPTools::jetTrackDistanceLinearized(transientTrack, direction, *(it->primaryVertex())).second.value();
+
+      h2_DTJA_Helix_vs_Linearized->Fill(fabs(distanceToJetAxis),fabs(distanceToJetAxisLinearized));
+    }
   }
 
 }

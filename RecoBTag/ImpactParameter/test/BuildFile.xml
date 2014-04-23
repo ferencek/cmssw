@@ -9,6 +9,11 @@
 <use   name="DataFormats/TrackReco"/>
 <use   name="DataFormats/VertexReco"/>
 <use   name="DataFormats/GeometryVector"/>
+<use   name="PhysicsTools/UtilAlgos"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="TrackingTools/Records"/>
+<use   name="TrackingTools/TransientTrack"/>
+<use   name="TrackingTools/IPTools"/>
 <library   file="IPAnalyzer.cc" name="IPAnalyzer">
   <flags   EDM_PLUGIN="1"/>
 </library>

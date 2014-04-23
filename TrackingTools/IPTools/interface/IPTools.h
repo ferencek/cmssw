@@ -92,6 +92,9 @@ namespace IPTools
 
 	std::pair<double,Measurement1D> jetTrackDistance(const reco::TransientTrack & track, const GlobalVector & direction,
                  const reco::Vertex & vertex);
+       
+       std::pair<double,Measurement1D> jetTrackDistanceLinearized(const reco::TransientTrack & track, const GlobalVector & direction,
+                 const reco::Vertex & vertex);
 }
 
 #endif
