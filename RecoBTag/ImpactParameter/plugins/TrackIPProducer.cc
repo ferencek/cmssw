@@ -81,6 +81,7 @@ TrackIPProducer::TrackIPProducer(const edm::ParameterSet& iConfig) :
   m_directionWithTracks     = m_config.getParameter<bool>("jetDirectionUsingTracks");
   m_directionWithGhostTrack = m_config.getParameter<bool>("jetDirectionUsingGhostTrack");
   m_useTrackQuality         = m_config.getParameter<bool>("useTrackQuality");
+  m_useAnalytic             = ( m_config.exists("useAnalytic") ? m_config.getParameter<bool>("useAnalytic") : false );
 
   if (m_computeGhostTrack)
     produces<reco::TrackCollection>("ghostTracks");
@@ -242,7 +243,10 @@ TrackIPProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          trackIP.closestToJetAxis = closest.globalPosition();
 
        // TODO: cross check if it is the same using other methods
-       trackIP.distanceToJetAxis = IPTools::jetTrackDistance(transientTrack, direction, *pv).second;
+       if (m_useAnalytic)
+         trackIP.distanceToJetAxis = IPTools::jetTrackDistance(transientTrack, direction, *pv).second;
+       else
+         trackIP.distanceToJetAxis = IPTools::jetTrackDistanceLinearized(transientTrack, direction, *pv).second;
 
        if (ghostTrack.get()) {
          const std::vector<GhostTrackState> &states = ghostTrack->states();

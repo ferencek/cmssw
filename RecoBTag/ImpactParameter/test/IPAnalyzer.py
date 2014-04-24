@@ -91,6 +91,10 @@ process.impactParameterTagInfos = impactParameterTagInfos.clone(
     primaryVertex = cms.InputTag("goodOfflinePrimaryVertices")
 )
 
+process.impactParameterTagInfosLinearized = process.impactParameterTagInfos.clone()
+
+process.impactParameterTagInfosAnalytic = process.impactParameterTagInfos.clone(useAnalytic = cms.bool(True))
+
 process.ipAnalyzer= cms.EDAnalyzer("IPAnalyzer",
     ipassociation = cms.InputTag("impactParameterTagInfos")
 )
@@ -101,5 +105,7 @@ process.p = cms.Path(
     * process.goodOfflinePrimaryVertices
     * process.ak5JetTracksAssociatorAtVertex
     * process.impactParameterTagInfos
+    * process.impactParameterTagInfosAnalytic
+    * process.impactParameterTagInfosLinearized
     * process.ipAnalyzer
 )
