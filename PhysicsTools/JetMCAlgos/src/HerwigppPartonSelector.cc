@@ -1,8 +1,7 @@
 
 /**
- * This is a Herwig++-specific parton selector that selects all status==2 partons. This is likely a temporary choice since
- * Herwig++ status codes in CMSSW currently break the HepMC convention. Once the status codes are fixed, the selector will
- * be updated.
+ * This is a Herwig++-specific parton selector that selects all partons that don't have other partons as daughters, i.e., partons
+ * from the end of the parton showering sequence
  */
 
 #include "PhysicsTools/JetMCAlgos/interface/HerwigppPartonSelector.h"
@@ -24,10 +23,19 @@ HerwigppPartonSelector::run(const edm::Handle<reco::GenParticleCollection> & par
    // loop over particles and select partons
    for(reco::GenParticleCollection::const_iterator it = particles->begin(); it != particles->end(); ++it)
    {
-     if( it->status()!=2 ) continue;                   // only accept status==2 particles
+     if( it->status()==1 ) continue;                   // skip stable particles
      if( !CandMCTagUtils::isParton( *it ) ) continue;  // skip particle if not a parton
 
-     partons->push_back( reco::GenParticleRef( particles, it - particles->begin() ) );
+     // check if the parton has other partons as daughters
+     unsigned nparton_daughters = 0;
+     for(unsigned i=0; i<it->numberOfDaughters(); ++i)
+     {
+       if( CandMCTagUtils::isParton( *(it->daughter(i)) ) )
+         ++nparton_daughters;
+     }
+
+     if( nparton_daughters==0 )
+       partons->push_back( reco::GenParticleRef( particles, it - particles->begin() ) );
    }
 
    return;
