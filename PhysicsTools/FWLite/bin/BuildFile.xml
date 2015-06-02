@@ -1,5 +1,6 @@
 <use   name="root"/>
 <use   name="boost"/>
+<use   name="fastjet"/>
 <use   name="FWCore/FWLite"/>
 <use   name="DataFormats/FWLite"/>
 <use   name="DataFormats/Luminosity"/>
@@ -9,6 +10,7 @@
 <use   name="PhysicsTools/Utilities"/>
 <use   name="PhysicsTools/SelectorUtils"/>
 <environment>
+  <bin   file="FWLiteFastjetReclustering.cc"></bin>
   <bin   file="FWLiteLumiAccess.cc"></bin>
   <bin   file="FWLiteHistograms.cc"></bin>
   <bin   file="FWLiteWithPythonConfig.cc"></bin>
