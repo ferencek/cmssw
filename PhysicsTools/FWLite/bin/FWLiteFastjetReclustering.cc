@@ -98,6 +98,7 @@ int main(int argc, char* argv[])
 	// loop candidates collection
 	for(std::vector<pat::PackedCandidate>::const_iterator it=candidates->begin(); it!=candidates->end(); ++it){
 	  input_particles.push_back(fastjet::PseudoJet(it->px(),it->py(),it->pz(),it->energy()));
+	  //printf("%15.20e\t %15.20e\t %15.20e\t %15.20e\n",it->px(),it->py(),it->pz(),it->energy());
 	}
 	
 	std::cout << "Total number of input particles:  " << input_particles.size() << std::endl;
