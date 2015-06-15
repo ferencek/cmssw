@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   TFileDirectory dir = fs.mkdir("output");
   TH2F* h2_nJetDiffAOD     = dir.make<TH2F>("h2_nJetDiffAOD"     , "AOD;Original nJet;(Reclustered - Original) nJet",      100, -0.5, 99.5,  10, -4.5,  5.5);
   TH2F* h2_nJetDiffMiniAOD = dir.make<TH2F>("h2_nJetDiffMiniAOD" , "MiniAOD;Original nJet;(Reclustered - Original) nJet",  100, -0.5, 99.5,  10, -4.5,  5.5);
-  TH2F* h2_nJetDiff        = dir.make<TH2F>("h2_nJetDiff"        , ";AOD nJet;(MiniAOD - AOD) nJet",                       100, -0.5, 99.5,  15, -4.5, 10.5);
+  TH2F* h2_nJetDiff        = dir.make<TH2F>("h2_nJetDiff"        , ";AOD nJet;(MiniAOD - AOD) nJet",                       100, -0.5, 99.5,  20, -9.5, 10.5);
 
   TH2F* h2_JetPtRelDiffAOD     = dir.make<TH2F>("h2_JetPtRelDiffAOD"     , "AOD N^{th} Jet;Original p_{T};(Reclustered - Original)/Original p_{T}",      50, 0., 250.,  200, -1, 1);
   TH2F* h2_JetPtRelDiffMiniAOD = dir.make<TH2F>("h2_JetPtRelDiffMiniAOD" , "MiniAOD N^{th} Jet;Original p_{T};(Reclustered - Original)/Original p_{T}",  50, 0., 250.,  200, -1, 1);
@@ -158,7 +158,7 @@ int main(int argc, char* argv[])
 	
 	std::vector<fastjet::PseudoJet> inclusive_jets_reclust_AOD = fastjet::sorted_by_pt(reclust_seq_AOD.inclusive_jets(ptmin));
 	
-	h2_nJetDiffAOD->Fill(inclusive_jets_AOD.size(), inclusive_jets_reclust_AOD.size() - inclusive_jets_AOD.size());
+	h2_nJetDiffAOD->Fill(inclusive_jets_AOD.size(), int(inclusive_jets_reclust_AOD.size()) - int(inclusive_jets_AOD.size()));
 	
 	size_t nJetsMin_AOD = std::min(inclusive_jets_reclust_AOD.size(), inclusive_jets_AOD.size());
 	for (size_t i = 0; i < nJetsMin_AOD; i++)
@@ -186,14 +186,14 @@ int main(int argc, char* argv[])
 	
 	std::vector<fastjet::PseudoJet> inclusive_jets_reclust = fastjet::sorted_by_pt(reclust_seq.inclusive_jets(ptmin));
 	
-	h2_nJetDiffMiniAOD->Fill(inclusive_jets.size(), inclusive_jets_reclust.size() - inclusive_jets.size());
+	h2_nJetDiffMiniAOD->Fill(inclusive_jets.size(), int(inclusive_jets_reclust.size()) - int(inclusive_jets.size()));
 	
 	size_t nJetsMin_MiniAOD = std::min(inclusive_jets_reclust.size(), inclusive_jets.size());
 	for (size_t i = 0; i < nJetsMin_MiniAOD; i++)
           h2_JetPtRelDiffMiniAOD->Fill(inclusive_jets[i].pt(), (inclusive_jets_reclust[i].pt() - inclusive_jets[i].pt())/inclusive_jets[i].pt());
 	//---------------------------------------------------------
 	// MiniAOD vs AOD
-	h2_nJetDiff->Fill(inclusive_jets_AOD.size(), inclusive_jets.size() - inclusive_jets_AOD.size());
+	h2_nJetDiff->Fill(inclusive_jets_AOD.size(), int(inclusive_jets.size()) - int(inclusive_jets_AOD.size()));
 	
 	size_t nJetsMin = std::min(inclusive_jets.size(), inclusive_jets_AOD.size());
 	for (size_t i = 0; i < nJetsMin; i++)
