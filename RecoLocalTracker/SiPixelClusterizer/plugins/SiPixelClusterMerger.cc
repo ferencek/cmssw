@@ -60,6 +60,7 @@ class SiPixelClusterMerger : public edm::stream::EDProducer<> {
       // ----------member data ---------------------------
       const edm::EDGetTokenT<edmNew::DetSetVector<SiPixelCluster> > src_;
       const double maxDistance_;
+      const bool keepMerged_;
 };
 
 //
@@ -76,7 +77,8 @@ class SiPixelClusterMerger : public edm::stream::EDProducer<> {
 //
 SiPixelClusterMerger::SiPixelClusterMerger(const edm::ParameterSet& iConfig) :
   src_( consumes<edmNew::DetSetVector<SiPixelCluster> >(iConfig.getParameter<edm::InputTag>("src")) ),
-  maxDistance_( iConfig.getParameter<double>("maxDistance") )
+  maxDistance_( iConfig.getParameter<double>("maxDistance") ),
+  keepMerged_( iConfig.getParameter<bool>("keepMerged") )
 {
     produces<edmNew::DetSetVector<SiPixelCluster> >();
 }
@@ -144,9 +146,6 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
      // loop over clusters and compute distances for all cluster pairs
      for(iter1 = beginIter; iter1 != endIter; ++iter1)
      {
-       // also want to keep the original unmerged clusters
-       spc.push_back( *iter1 );
-
        for(iter2 = (iter1 + 1); iter2 != endIter; ++iter2)
        {
          // insert the computed distance and cluster indices
@@ -200,6 +199,19 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
 
        // add the newly created merged cluster to the output collection
        spc.push_back( cluster );
+     }
+
+     // also want to keep the original unmerged clusters
+     for(edmNew::DetSet<SiPixelCluster>::const_iterator iter = beginIter; iter != endIter; ++iter)
+     {
+       // check if the original clusters that got merged should also be kept
+       if( keepMerged_ )
+         spc.push_back( *iter );
+       else
+       {
+         if( !isMerged.at(iter - beginIter) )
+           spc.push_back( *iter );
+       }
      }
    }
 }
