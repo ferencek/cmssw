@@ -79,11 +79,13 @@ public:
   static constexpr unsigned int SPANBITS=6;
   static constexpr unsigned int MAXSPAN=63;
   static constexpr unsigned int MAXPOS=1023;
+  static constexpr unsigned int MAXOFFSET=255;
 #else
   static const unsigned int POSBITS=10;
   static const unsigned int SPANBITS=6;
   static const unsigned int MAXSPAN=63;
   static const unsigned int MAXPOS=1023;
+  static const unsigned int MAXOFFSET=255;
 #endif  
   
   /** Construct from a range of digis that form a cluster and from 
@@ -101,8 +103,8 @@ public:
     for (unsigned int i=0; i!=isize; ++i) {
       uint16_t xoffset = xpos[i]-xmin;
       uint16_t yoffset = ypos[i]-ymin;
-      thePixelOffset[i*2] = std::min(uint16_t(MAXSPAN),xoffset);
-      thePixelOffset[i*2+1] = std::min(uint16_t(MAXSPAN),yoffset);
+      thePixelOffset[i*2] = std::min(uint16_t(MAXOFFSET),xoffset);
+      thePixelOffset[i*2+1] = std::min(uint16_t(MAXOFFSET),yoffset);
       if (xoffset > maxRow) maxRow = xoffset; 
       if (yoffset > maxCol) maxCol = yoffset; 
     }
@@ -155,7 +157,6 @@ public:
   inline int minPixelCol() const { return thePixelCol&MAXPOS;} // The min y index.
   inline int maxPixelCol() const { verifyVersion(); return minPixelCol() + colSpan();} // The max y index.
   
-  
   const std::vector<uint8_t> & pixelOffset() const { return thePixelOffset;}
   const std::vector<uint16_t> & pixelADC() const { return thePixelADC;}
   
@@ -188,9 +189,33 @@ private:
   }
 public:
   
-  int colSpan() const {return span_(thePixelCol); }
+  int colSpan() const {
+    if unlikely( overflowCol() ) {
+      int colSpan = 0;
+      int isize = thePixelADC.size();
+      for (int i=0; i!=isize; ++i) {
+        int yoffset = thePixelOffset[i*2+1];
+        if (yoffset > colSpan) colSpan = yoffset;
+      }
+      return colSpan;
+    }
+    else
+      return span_(thePixelCol);
+  }
   
-  int rowSpan() const { return span_(thePixelRow); }
+  int rowSpan() const {
+    if unlikely( overflowRow() ) {
+      int rowSpan = 0;
+      int isize = thePixelADC.size();
+      for (int i=0; i!=isize; ++i) {
+        int xoffset = thePixelOffset[i*2];
+        if (xoffset > rowSpan) rowSpan = xoffset;
+      }
+      return rowSpan;
+    }
+    else
+      return span_(thePixelRow);
+  }
   
   
   bool overflowCol() const { return overflow_(thePixelCol); }
