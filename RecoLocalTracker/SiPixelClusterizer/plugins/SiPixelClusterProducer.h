@@ -49,6 +49,15 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 
+
+void printStuff(const edm::DetSet<PixelDigi>::const_iterator & dit)
+{
+}
+void printStuff(const edmNew::DetSet<SiPixelCluster>::const_iterator & cit)
+{
+  std::cout << "  Cluster size x y charge: " << cit->size() << " " << cit->x() << " " << cit->y() << " " << cit->charge() << " " << std::endl;
+}
+
   class dso_hidden SiPixelClusterProducer final : public edm::stream::EDProducer<> {
   public:
     //--- Constructor, virtual destructor (just in case)

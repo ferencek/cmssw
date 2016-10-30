@@ -114,6 +114,9 @@ class dso_hidden PixelThresholdClusterizer final : public PixelClusterizerBase {
   // Calibrate the ADC charge to electrons 
   int calibrate(int adc, int col, int row);
 
+  int nPixels_;
+
+
 };
 
 #endif

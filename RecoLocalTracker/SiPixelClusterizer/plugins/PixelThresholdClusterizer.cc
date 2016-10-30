@@ -58,6 +58,7 @@ PixelThresholdClusterizer::PixelThresholdClusterizer
     doSplitClusters( conf.getParameter<bool>("SplitClusters") )
 {
   theBuffer.setSize( theNumOfRows, theNumOfCols );
+  nPixels_=0;
 }
 /////////////////////////////////////////////////////////////////////////////
 PixelThresholdClusterizer::~PixelThresholdClusterizer() {}
@@ -121,6 +122,14 @@ void PixelThresholdClusterizer::clusterizeDetUnitT( const T & input,
   //  Copy PixelDigis to the buffer array; select the seed pixels
   //  on the way, and store them in theSeeds.
   copy_to_buffer(begin, end);
+  if(detid_==302187536)
+  {
+    std::cout << "nPixels: " << nPixels_ << std::endl;
+    std::cout << "nRows: " << theNumOfRows << std::endl;
+    std::cout << "nCols: " << theNumOfCols << std::endl;
+    //std::cout << "Seed 0 row:col = " << theSeeds[0].row() << ":" << theSeeds[0].col() << std::endl;
+    //std::cout << output.id() << std::endl;
+  }
   
   //  Loop over all seeds.  TO DO: wouldn't using iterators be faster?
   //  edm::LogError("PixelThresholdClusterizer") <<  "Starting clusterizing" << endl;
@@ -132,6 +141,8 @@ void PixelThresholdClusterizer::clusterizeDetUnitT( const T & input,
       if ( theBuffer(theSeeds[i]) >= theSeedThreshold ) 
 	{  // Is this seed still valid?
 	  //  Make a cluster around this seed
+          if(detid_==302187536)
+            std::cout << "Seed " << i << " row:col = " << theSeeds[i].row() << ":" << theSeeds[i].col() << std::endl;
 	  SiPixelCluster && cluster = make_cluster( theSeeds[i] , output);
 	  
 	  //  Check if the cluster is above threshold  
@@ -223,6 +234,7 @@ void PixelThresholdClusterizer::copy_to_buffer( DigiIterator begin, DigiIterator
 #ifdef PIXELREGRESSION
   static std::atomic<int> eqD=0;
 #endif
+  nPixels_ = 0;
   for(DigiIterator di = begin; di != end; ++di) {
     int row = di->row();
     int col = di->column();
@@ -232,8 +244,11 @@ void PixelThresholdClusterizer::copy_to_buffer( DigiIterator begin, DigiIterator
     //assert(adc==adcOld);
     if (adc!=adcOld) std::cout << "VI " << eqD  <<' '<< ic  <<' '<< end-begin <<' '<< i <<' '<< di->adc() <<' ' << adc <<' '<< adcOld << std::endl; else ++eqD;
 #endif
+    if(detid_==302187536)
+      std::cout << " row:col charge = " << row << ":" << col << " " << adc << std::endl;
     if ( adc >= thePixelThreshold) {
       theBuffer.set_adc( row, col, adc);
+      ++nPixels_;
       if ( adc >= theSeedThreshold) theSeeds.push_back( SiPixelCluster::PixelPos(row,col) );
     }
   }
@@ -243,17 +258,23 @@ void PixelThresholdClusterizer::copy_to_buffer( DigiIterator begin, DigiIterator
 
 void PixelThresholdClusterizer::copy_to_buffer( ClusterIterator begin, ClusterIterator end )
 {
+  nPixels_ = 0;
   // loop over clusters
   for(ClusterIterator ci = begin; ci != end; ++ci) {
     // loop over pixels
+    //if(detid_==302187536)
+      //std::cout << "Cluster " << int(ci-begin) << " minRow, minCol = " << ci->minPixelRow() << ", " << ci->minPixelCol() << std::endl;
     for(int i = 0; i < ci->size(); ++i) {
       const SiPixelCluster::Pixel pixel = ci->pixel(i);
 
       int row = pixel.x;
       int col = pixel.y;
       int adc = pixel.adc;
+      if(detid_==302187536)
+        std::cout << " row:col charge = " << row << ":" << col << " " << adc << std::endl;
       if ( adc >= thePixelThreshold) {
         theBuffer.add_adc( row, col, adc);
+        ++nPixels_;
         if ( adc >= theSeedThreshold) theSeeds.push_back( SiPixelCluster::PixelPos(row,col) );
       }
     }

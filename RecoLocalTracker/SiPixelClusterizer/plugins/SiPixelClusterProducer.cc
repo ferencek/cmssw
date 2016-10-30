@@ -186,6 +186,24 @@
       // a DetSet
       edmNew::DetSetVector<SiPixelCluster>::FastFiller spc(output, DSViter->detId());
       clusterizer_->clusterizeDetUnit(*DSViter, pixDet, badChannels, spc);
+      for(edmNew::DetSetVector<SiPixelCluster>::const_iterator it = output.begin(); it != output.end(); ++it)
+      {
+        if(it->detId() != DSViter->detId()) continue;
+        if( (it->size() != DSViter->size() && clusterMode_ == "Reclustering") || DSViter->detId()==302187536 )
+        {
+          std::cout << "Found mismatch for DetId=" << it->detId() << " , Input: " << DSViter->size() << " , Output: " << it->size() << std::endl;
+          std::cout << "Input clusters" << std::endl;
+          for(typename T::value_type::const_iterator cit = DSViter->begin(); cit != DSViter->end(); ++cit)
+          {
+            printStuff(cit);
+          }
+          std::cout << "Output clusters" << std::endl;
+          for(edmNew::DetSet<SiPixelCluster>::const_iterator cit = it->begin(); cit != it->end(); ++cit)
+          {
+            std::cout << "  Cluster size x y charge: " << cit->size() << " " << cit->x() << " " << cit->y() << " " << cit->charge() << " " << std::endl;
+          }
+        }
+      }
       if ( spc.empty() ) {
         spc.abort();
       } else {
