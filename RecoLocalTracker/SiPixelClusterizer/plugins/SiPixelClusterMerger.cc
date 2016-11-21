@@ -9,8 +9,8 @@
   *
   * Implementation:
   *    Pairs of pixel cluster that are closer to each other than a configurable maximum distance are merged
-  *    together. The clostest pairs are merged first and each cluster is allowed to be merged in only one pair.
-  *    Original unmerged clusters are also kept in the output collection.
+  *    together. The closest pairs are merged first and each cluster is allowed to be merged in only one pair.
+  *    If requested, the original unmerged clusters can also be kept in the output collection.
   */
 //
 // Original Author:  Dinko Ferencek
@@ -54,12 +54,16 @@ class SiPixelClusterMerger : public edm::stream::EDProducer<> {
       virtual void produce(edm::Event&, const edm::EventSetup&) override;
       virtual void endStream() override;
 
-      double distance(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2);
+      double distanceX(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2);
+      double distanceY(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2);
+      double distance2(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2);
       void merge(const edmNew::DetSetVector<SiPixelCluster> & input, edmNew::DetSetVector<SiPixelCluster> & output);
 
       // ----------member data ---------------------------
       const edm::EDGetTokenT<edmNew::DetSetVector<SiPixelCluster> > src_;
-      const double maxDistance_;
+      const double maxDistanceX_;
+      const double maxDistanceY_;
+      const double maxDistance2_;
       const bool keepMerged_;
 };
 
@@ -77,7 +81,9 @@ class SiPixelClusterMerger : public edm::stream::EDProducer<> {
 //
 SiPixelClusterMerger::SiPixelClusterMerger(const edm::ParameterSet& iConfig) :
   src_( consumes<edmNew::DetSetVector<SiPixelCluster> >(iConfig.getParameter<edm::InputTag>("src")) ),
-  maxDistance_( iConfig.getParameter<double>("maxDistance") ),
+  maxDistanceX_( iConfig.getParameter<double>("maxDistanceX") ),
+  maxDistanceY_( iConfig.getParameter<double>("maxDistanceY") ),
+  maxDistance2_( maxDistanceX_*maxDistanceX_ + maxDistanceY_*maxDistanceY_ ),
   keepMerged_( iConfig.getParameter<bool>("keepMerged") )
 {
     produces<edmNew::DetSetVector<SiPixelCluster> >();
@@ -116,14 +122,28 @@ SiPixelClusterMerger::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put( output );
 }
 
+// ------------ method that computes distance along the x coordinate betweeen a pair of pixel clusters  ------------
+double
+SiPixelClusterMerger::distanceX(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2)
+{
+   return std::abs(cluster1.x() - cluster2.x());
+}
+
+// ------------ method that computes distance along the x coordinate betweeen a pair of pixel clusters  ------------
+double
+SiPixelClusterMerger::distanceY(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2)
+{
+   return std::abs(cluster1.y() - cluster2.y());
+}
+
 // ------------ method that computes distance betweeen a pair of pixel clusters  ------------
 double
-SiPixelClusterMerger::distance(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2)
+SiPixelClusterMerger::distance2(const SiPixelCluster & cluster1, const SiPixelCluster & cluster2)
 {
-   // TO BE IMPLEMENTED
-   double distance = 0;
+   double dX = distanceX(cluster1, cluster2);
+   double dY = distanceY(cluster1, cluster2);
 
-   return distance;
+   return dX*dX + dY*dY;
 }
 
 // ------------ method that implements the cluster merging algorithm  ------------
@@ -135,7 +155,7 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
    for( ; DSViter != input.end(); ++DSViter)
    {
      // map to store distances for all cluster pairs
-     std::multimap<double, std::pair<size_t, size_t> > distances;
+     std::multimap<double, std::pair<size_t, size_t> > distances2;
 
      // fast filler for clusters
      edmNew::DetSetVector<SiPixelCluster>::FastFiller spc(output, DSViter->detId());
@@ -149,7 +169,7 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
        for(iter2 = (iter1 + 1); iter2 != endIter; ++iter2)
        {
          // insert the computed distance and cluster indices
-         distances.insert( std::make_pair(distance(*iter1, *iter2), std::make_pair(iter1 - beginIter, iter2 - beginIter)) );
+         distances2.insert( std::make_pair(distance2(*iter1, *iter2), std::make_pair(iter1 - beginIter, iter2 - beginIter)) );
        }
      }
 
@@ -158,10 +178,10 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
 
      // merge cluster pairs that are closer that the maximum distance
      for(std::multimap<double, std::pair<size_t,size_t> >::const_iterator iter =
-         distances.begin(); iter != distances.end(); ++iter)
+         distances2.begin(); iter != distances2.end(); ++iter)
      {
-       // with the map keys in ascending order, break the loop once the maximum distance is reached
-       if( iter->first > maxDistance_ )
+       // with the map keys in ascending order, break the loop once the maximum allowed distance is reached
+       if( iter->first > maxDistance2_ )
          break;
 
        // fetch the the clusters from the pair
@@ -172,8 +192,17 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
 
        // check if the two clusters are still available for merging
        if( isMerged.at(clusterIdx1) || isMerged.at(clusterIdx2) ) continue;
+       // check if the two clusters are too far apart in x
+       if( distanceX(cluster1, cluster2) > maxDistanceX_ ) continue;
+       // check if the two clusters are too far apart in y
+       if( distanceY(cluster1, cluster2) > maxDistanceY_ ) continue;
 
-       // mark the two clusters as no longer available for clustering
+       // now check that the two nearby clusters are separated by a missing double-column
+       int lowerMaxPixelCol  = std::min(cluster1.maxPixelCol(), cluster2.maxPixelCol());
+       int higherMinPixelCol = std::max(cluster1.minPixelCol(), cluster2.minPixelCol());
+       if( !( (higherMinPixelCol - lowerMaxPixelCol) == 3 && lowerMaxPixelCol%2 == 1 && higherMinPixelCol%2 == 0 ) ) continue;
+
+       // mark the two clusters as no longer available for merging
        isMerged.at(clusterIdx1) = true;
        isMerged.at(clusterIdx2) = true;
 
