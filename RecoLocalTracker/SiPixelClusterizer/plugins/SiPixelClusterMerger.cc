@@ -202,6 +202,8 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
        int higherMinPixelCol = std::max(cluster1.minPixelCol(), cluster2.minPixelCol());
        if( !( (higherMinPixelCol - lowerMaxPixelCol) == 3 && lowerMaxPixelCol%2 == 1 && higherMinPixelCol%2 == 0 ) ) continue;
 
+       std::cout << ">>>> Found clusters for merging!" << std::endl;
+
        // mark the two clusters as no longer available for merging
        isMerged.at(clusterIdx1) = true;
        isMerged.at(clusterIdx2) = true;
