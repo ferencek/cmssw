@@ -64,7 +64,7 @@ class SiPixelClusterMerger : public edm::stream::EDProducer<> {
       const double maxDistanceX_;
       const double maxDistanceY_;
       const double maxDistance2_;
-      const bool keepMerged_;
+      const bool keepOriginal_;
 };
 
 //
@@ -84,7 +84,7 @@ SiPixelClusterMerger::SiPixelClusterMerger(const edm::ParameterSet& iConfig) :
   maxDistanceX_( iConfig.getParameter<double>("maxDistanceX") ),
   maxDistanceY_( iConfig.getParameter<double>("maxDistanceY") ),
   maxDistance2_( maxDistanceX_*maxDistanceX_ + maxDistanceY_*maxDistanceY_ ),
-  keepMerged_( iConfig.getParameter<bool>("keepMerged") )
+  keepOriginal_( iConfig.getParameter<bool>("keepOriginal") )
 {
     produces<edmNew::DetSetVector<SiPixelCluster> >();
 }
@@ -234,7 +234,7 @@ SiPixelClusterMerger::merge(const edmNew::DetSetVector<SiPixelCluster> & input, 
      for(edmNew::DetSet<SiPixelCluster>::const_iterator iter = beginIter; iter != endIter; ++iter)
      {
        // check if the original clusters that got merged should also be kept
-       if( keepMerged_ )
+       if( keepOriginal_ )
          spc.push_back( *iter );
        else
        {
