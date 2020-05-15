@@ -26,16 +26,13 @@ process.load('DQMOffline.Configuration.DQMOfflineMC_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(100),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(
-    'file:/eos/cms//store/relval/CMSSW_11_1_0_pre5/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_Harvesting_6-v1/10000/00F14E92-1212-E64C-A9C6-3DF89F0F7DB7.root',
-    #'file:/eos/cms//store/relval/CMSSW_11_1_0_pre5/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_Harvesting_6-v1/10000/AE74DF9D-E5DD-7649-BD41-210C0D97F9FB.root'
-    ),
+    fileNames = cms.untracked.vstring('file:/eos/cms/store/relval/CMSSW_11_1_0_pre5/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_Harvesting_6-v1/10000/C7A35E5D-89AF-A542-BB06-DC2925B6F261.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -63,7 +60,7 @@ process.options = cms.untracked.PSet(
     printDependencies = cms.untracked.bool(False),
     sizeOfStackForThreadsInKB = cms.optional.untracked.uint32,
     throwIfIllegalParameter = cms.untracked.bool(True),
-    wantSummary = cms.untracked.bool(False)
+    wantSummary = cms.untracked.bool(True)
 )
 
 # Production Info
@@ -116,7 +113,7 @@ process.prevalidation_step = cms.Path(process.globalPrevalidationPixelTrackingOn
 #the standard validation path is updated to run the new sequence -
 # It can either be pixelHeterogeneousValidationSource(if you want to run the modules which access products directly from GPU)
 # or be pixelHeterogeneousValidationFromsoaSource(if you want to run the modules which access products directly from GPU)
-process.validation_step = cms.EndPath(process.globalValidationPixelTrackingOnly*process.pixelHeterogeneousValidationFromsoaSource)
+process.validation_step = cms.EndPath(process.globalValidationPixelTrackingOnly*process.pixelHeterogeneousValidationSource)
 
 process.dqmoffline_step = cms.EndPath(process.DQMOfflinePixelTracking)
 process.dqmofflineOnPAT_step = cms.EndPath(process.PostDQMOffline)
