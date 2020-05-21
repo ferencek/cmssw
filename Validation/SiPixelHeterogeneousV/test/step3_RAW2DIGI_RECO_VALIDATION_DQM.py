@@ -32,7 +32,10 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:/eos/cms/store/relval/CMSSW_11_1_0_pre5/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_Harvesting_6-v1/10000/C7A35E5D-89AF-A542-BB06-DC2925B6F261.root'),
+    fileNames = cms.untracked.vstring(
+        #'root://xrootd-cms.infn.it//store/relval/CMSSW_11_1_0_pre5/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_Harvesting_6-v1/10000/C7A35E5D-89AF-A542-BB06-DC2925B6F261.root'
+        'file:/ssd-data1/ferencek/TrackerGPU/C7A35E5D-89AF-A542-BB06-DC2925B6F261.root'
+    ),
     secondaryFileNames = cms.untracked.vstring()
 )
 
