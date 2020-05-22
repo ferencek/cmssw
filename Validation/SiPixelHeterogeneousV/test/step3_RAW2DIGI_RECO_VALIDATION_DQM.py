@@ -116,7 +116,7 @@ process.prevalidation_step = cms.Path(process.globalPrevalidationPixelTrackingOn
 #the standard validation path is updated to run the new sequence -
 # It can either be pixelHeterogeneousValidationSource(if you want to run the modules which access products directly from GPU)
 # or be pixelHeterogeneousValidationFromsoaSource(if you want to run the modules which access products directly from GPU)
-process.validation_step = cms.EndPath(process.globalValidationPixelTrackingOnly*process.pixelHeterogeneousValidationSource)
+process.validation_step = cms.EndPath(process.globalValidationPixelTrackingOnly*process.pixelHeterogeneousValidationSource*process.pixelHeterogeneousValidationFromsoaSource)
 
 process.dqmoffline_step = cms.EndPath(process.DQMOfflinePixelTracking)
 process.dqmofflineOnPAT_step = cms.EndPath(process.PostDQMOffline)
