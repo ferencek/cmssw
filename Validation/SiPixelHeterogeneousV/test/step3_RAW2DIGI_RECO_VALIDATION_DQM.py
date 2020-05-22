@@ -152,3 +152,6 @@ process = customiseLogErrorHarvesterUsingOutputCommands(process)
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
 # End adding early deletion
+
+# force running siPixelDigis@cpu
+process.siPixelClustersPreSplitting.cpu.src = 'siPixelDigis@cpu'
