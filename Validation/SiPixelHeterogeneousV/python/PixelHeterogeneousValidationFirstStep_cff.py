@@ -11,6 +11,6 @@ from Validation.SiPixelHeterogeneousV.pixelValidateClusterFromSoA_cfi import *
 
 #Add the modules in the Sequence
 #the following sequence needs to be added to the standard validation sequence##TODO
-pixelHeterogeneousValidationSource = cms.Sequence(sipixelrechitvalid*sipixelclustervalid)
+pixelHeterogeneousValidationSource = cms.Sequence(sipixelrechitvalid*sipixelclustergpuvalid)
 
 pixelHeterogeneousValidationFromsoaSource = cms.Sequence(sipixelrechitvalid*pixelverticesfromsoavalid*sipixelclusterfromsoavalid)
