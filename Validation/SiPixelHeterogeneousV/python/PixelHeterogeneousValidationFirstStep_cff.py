@@ -8,9 +8,10 @@ from Validation.SiPixelHeterogeneousV.pixelValidateVerticesFromSoA_cfi import *
 
 from Validation.SiPixelHeterogeneousV.pixelValidateClusterGPU_cfi import *
 from Validation.SiPixelHeterogeneousV.pixelValidateClusterFromSoA_cfi import *
+from Validation.SiPixelHeterogeneousV.pixelValidateCluster_cfi import *
 
 #Add the modules in the Sequence
 #the following sequence needs to be added to the standard validation sequence##TODO
-pixelHeterogeneousValidationSource = cms.Sequence(sipixelrechitvalid*sipixelclustergpuvalid)
+pixelHeterogeneousValidationSource = cms.Sequence(sipixelrechitvalid*sipixelclustergpuvalid*sipixelclustervalid)
 
 pixelHeterogeneousValidationFromsoaSource = cms.Sequence(sipixelrechitvalid*pixelverticesfromsoavalid*sipixelclusterfromsoavalid)
