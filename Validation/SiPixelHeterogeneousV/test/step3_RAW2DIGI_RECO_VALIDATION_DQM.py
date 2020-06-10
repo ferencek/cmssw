@@ -33,7 +33,11 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-    'file:/eos/cms//store/relval/CMSSW_11_1_0_pre7/RelValTTbar_14TeV/GEN-SIM-DIGI-RAW/111X_mcRun3_2021_realistic_v4-v1/20000/05646F0A-7AE5-7843-9EB0-8AE84B7440F0.root',
+        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/DA11466D-301F-E543-A1C8-BB58FA8CF9A4.root',
+        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FC585FF5-20B4-9B44-98F8-48B3FDC1F094.root',
+        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FE16CA90-C906-A74D-A313-0C375A56E8CE.root',
+        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FE63264F-0E4B-6048-801F-DF4C7B7F1003.root',
+        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FF4B3BFE-1201-694F-855B-0BAA07160FAB.root'
     ),
     secondaryFileNames = cms.untracked.vstring()
 )
