@@ -6,6 +6,8 @@ from Validation.SiPixelHeterogeneousV.pixelValidateVerticesGPU_cfi import *
 from Validation.SiPixelHeterogeneousV.pixelValidateDigiGPU_cfi import *
 
 ##modules that import intermediate SoA from CPU
+from Validation.SiPixelHeterogeneousV.siPixelClustersLegacyValid_cfi import *
+from Validation.SiPixelHeterogeneousV.siPixelClustersLegacyFromSoAValid_cfi import *
 from Validation.SiPixelHeterogeneousV.pixelValidateVerticesFromSoA_cfi import *
 from Validation.SiPixelHeterogeneousV.pixelValidateDigiFromSoA_cfi import *
 from Validation.SiPixelHeterogeneousV.pixelValidateTrackFromSoA_cfi import *
@@ -19,4 +21,6 @@ pixelHeterogeneousValidationSource = cms.Sequence(sipixeldigivalid
 pixelHeterogeneousValidationFromsoaSource = cms.Sequence(sipixeldigifromsoavalid
                                                         *sipixelrechitvalid
                                                         *sipixeltrackfromsoavalid
-                                                        *pixelverticesfromsoavalid)
+                                                        *pixelverticesfromsoavalid
+                                                        *siPixelClustersLegacyValid
+                                                        *siPixelClustersLegacyFromSoAValid)
