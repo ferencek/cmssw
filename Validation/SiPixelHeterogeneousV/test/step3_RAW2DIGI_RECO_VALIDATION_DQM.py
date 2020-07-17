@@ -33,11 +33,11 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/DA11466D-301F-E543-A1C8-BB58FA8CF9A4.root',
-        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FC585FF5-20B4-9B44-98F8-48B3FDC1F094.root',
-        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FE16CA90-C906-A74D-A313-0C375A56E8CE.root',
-        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FE63264F-0E4B-6048-801F-DF4C7B7F1003.root',
-        '/store/relval/CMSSW_11_1_0_pre7/RelValTTbar_13UP18_RD/GEN-SIM-DIGI-RAW-HLTDEBUG/PUpmx25ns_110X_upgrade2018_realistic_v9_RD_1HS-v1/20000/FF4B3BFE-1201-694F-855B-0BAA07160FAB.root'
+        '/store/relval/CMSSW_11_1_0_pre8/RelValTTbar_13/GEN-SIM-DIGI-RAW/PU25ns_110X_upgrade2018_realistic_v9_config3-v1/20000/04F3485D-4FCD-B541-965C-9640C4A3339C.root',
+        '/store/relval/CMSSW_11_1_0_pre8/RelValTTbar_13/GEN-SIM-DIGI-RAW/PU25ns_110X_upgrade2018_realistic_v9_config3-v1/20000/067FC741-3431-A442-B190-F18154600C8F.root',
+        '/store/relval/CMSSW_11_1_0_pre8/RelValTTbar_13/GEN-SIM-DIGI-RAW/PU25ns_110X_upgrade2018_realistic_v9_config3-v1/20000/0B9C74C8-9DBA-2442-84FF-C3C193D84E68.root',
+        '/store/relval/CMSSW_11_1_0_pre8/RelValTTbar_13/GEN-SIM-DIGI-RAW/PU25ns_110X_upgrade2018_realistic_v9_config3-v1/20000/30A5879C-7667-0343-9531-7D0F83113D4B.root',
+        '/store/relval/CMSSW_11_1_0_pre8/RelValTTbar_13/GEN-SIM-DIGI-RAW/PU25ns_110X_upgrade2018_realistic_v9_config3-v1/20000/50C5C1E1-3841-5440-A071-1B26292C99AC.root'
     ),
     secondaryFileNames = cms.untracked.vstring()
 )
