@@ -28,6 +28,6 @@ void SiPixelRocStatus::updateDIGI(unsigned int hits) { fDC_ += hits; }
 void SiPixelRocStatus::updateFEDerror25(bool fedError25) { isFEDerror25_ = isFEDerror25_ && fedError25; }
 
 // ----------------------------------------------------------------------
-unsigned int SiPixelRocStatus::digiOccROC() { return fDC_; }
+const unsigned int SiPixelRocStatus::digiOccROC() const { return fDC_; }
 // ----------------------------------------------------------------------
-bool SiPixelRocStatus::isFEDerror25() { return isFEDerror25_; }
+const bool SiPixelRocStatus::isFEDerror25() const { return isFEDerror25_; }

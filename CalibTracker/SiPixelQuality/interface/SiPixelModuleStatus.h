@@ -23,20 +23,21 @@ public:
   void updateFEDerror25(int iroc, bool FEDerror25);
 
   /// return ROC status (= hits on ROC iroc)
-  unsigned int digiOccROC(int iroc);
+  const unsigned int digiOccROC(int iroc) const;
 
   /// return ROC FEDerror25
-  bool fedError25(int iroc);
+  const bool fedError25(int iroc) const;
 
   /// return module status (= hits on module)
-  unsigned int digiOccMOD();
+  const unsigned int digiOccMOD() const;
 
   /// get a ROC
+  const SiPixelRocStatus* getRoc(int i) const;
   SiPixelRocStatus* getRoc(int i);
 
   /// accessors and setters
-  int detid();
-  int nrocs();
+  const int detid() const;
+  const int nrocs() const;
   void setDetId(int detid);
   void setNrocs(int iroc);
 
@@ -46,7 +47,7 @@ public:
 
   /// combine new data to update(topup) module status
   void updateModuleDIGI(int roc, unsigned int nhits);
-  void updateModuleStatus(SiPixelModuleStatus newData);
+  void updateModuleStatus(const SiPixelModuleStatus& newData);
 
 private:
   int fDetid_, fNrocs_;

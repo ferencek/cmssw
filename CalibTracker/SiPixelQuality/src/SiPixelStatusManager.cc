@@ -236,8 +236,8 @@ void SiPixelStatusManager::createFEDerror25() {
 
     std::map<int, std::vector<int> > tmpBadRocLists = tmpFEDerror25.getFEDerror25Rocs();
 
-    std::map<int, SiPixelModuleStatus>::iterator itModEnd = tmpFEDerror25.end();
-    for (std::map<int, SiPixelModuleStatus>::iterator itMod = tmpFEDerror25.begin(); itMod != itModEnd; ++itMod) {
+    std::map<int, SiPixelModuleStatus>::const_iterator itModEnd = tmpFEDerror25.end();
+    for (std::map<int, SiPixelModuleStatus>::const_iterator itMod = tmpFEDerror25.begin(); itMod != itModEnd; ++itMod) {
       int detid = itMod->first;
       // if the badroc list differs for any detid, update the payload
       if (tmpBadRocLists[detid] != (FEDerror25Map_[previousLumi])[detid]) {

@@ -88,7 +88,7 @@ void SiPixelDetectorStatus::dumpToFile(std::ofstream& OD) {
   OD << "# SiPixelDetectorStatus for run " << fRun0_ << " .. " << fRun1_ << std::endl;
   OD << "# SiPixelDetectorStatus total hits = " << fDetHits_ << std::endl;
 
-  for (std::map<int, SiPixelModuleStatus>::iterator it = SiPixelDetectorStatus::begin();
+  for (std::map<int, SiPixelModuleStatus>::const_iterator it = SiPixelDetectorStatus::begin();
        it != SiPixelDetectorStatus::end();
        ++it) {
     for (int iroc = 0; iroc < it->second.nrocs(); ++iroc) {
@@ -127,7 +127,7 @@ void SiPixelDetectorStatus::fillFEDerror25(int detid, PixelFEDChannel ch) {
 std::map<int, std::vector<int>> SiPixelDetectorStatus::getFEDerror25Rocs() {
   std::map<int, std::vector<int>> badRocLists;
 
-  for (std::map<int, SiPixelModuleStatus>::iterator itMod = SiPixelDetectorStatus::begin();
+  for (std::map<int, SiPixelModuleStatus>::const_iterator itMod = SiPixelDetectorStatus::begin();
        itMod != SiPixelDetectorStatus::end();
        ++itMod) {
     int detid = itMod->first;
@@ -147,20 +147,27 @@ std::map<int, std::vector<int>> SiPixelDetectorStatus::getFEDerror25Rocs() {
 }
 
 // ----------------------------------------------------------------------
-std::map<int, SiPixelModuleStatus>::iterator SiPixelDetectorStatus::begin() { return fModules_.begin(); }
+const std::map<int, SiPixelModuleStatus>::const_iterator SiPixelDetectorStatus::begin() const { return fModules_.cbegin(); }
 
 // ----------------------------------------------------------------------
-std::map<int, SiPixelModuleStatus>::iterator SiPixelDetectorStatus::end() { return fModules_.end(); }
+const std::map<int, SiPixelModuleStatus>::const_iterator SiPixelDetectorStatus::end() const { return fModules_.cend(); }
 
 // ----------------------------------------------------------------------
 int SiPixelDetectorStatus::nmodules() { return static_cast<int>(fModules_.size()); }
 
 // ----------------------------------------------------------------------
+const SiPixelModuleStatus* SiPixelDetectorStatus::getModule(int detid) const {
+  if (fModules_.find(detid) == fModules_.end()) {
+    return nullptr;
+  }
+  return &(fModules_.at(detid));
+}
+
 SiPixelModuleStatus* SiPixelDetectorStatus::getModule(int detid) {
   if (fModules_.find(detid) == fModules_.end()) {
     return nullptr;
   }
-  return &(fModules_[detid]);
+  return &(fModules_.at(detid));
 }
 
 bool SiPixelDetectorStatus::findModule(int detid) {
@@ -174,7 +181,7 @@ bool SiPixelDetectorStatus::findModule(int detid) {
 double SiPixelDetectorStatus::perRocDigiOcc() {
   unsigned long int ave(0);
   int nrocs(0);
-  for (std::map<int, SiPixelModuleStatus>::iterator it = SiPixelDetectorStatus::begin();
+  for (std::map<int, SiPixelModuleStatus>::const_iterator it = SiPixelDetectorStatus::begin();
        it != SiPixelDetectorStatus::end();
        ++it) {
     unsigned long int inc = it->second.digiOccMOD();
@@ -189,7 +196,7 @@ double SiPixelDetectorStatus::perRocDigiOccVar() {
 
   double sig = 0.0;
   int nrocs(0);
-  for (std::map<int, SiPixelModuleStatus>::iterator it = SiPixelDetectorStatus::begin();
+  for (std::map<int, SiPixelModuleStatus>::const_iterator it = SiPixelDetectorStatus::begin();
        it != SiPixelDetectorStatus::end();
        ++it) {
     unsigned long int inc = it->second.digiOccMOD();
@@ -204,9 +211,9 @@ double SiPixelDetectorStatus::perRocDigiOccVar() {
 /*|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||*/
 
 // combine status from different data (coming from different run/lumi)
-void SiPixelDetectorStatus::updateDetectorStatus(SiPixelDetectorStatus newData) {
+void SiPixelDetectorStatus::updateDetectorStatus(const SiPixelDetectorStatus& newData) {
   // loop over new data status
-  for (std::map<int, SiPixelModuleStatus>::iterator it = newData.begin(); it != newData.end(); ++it) {
+  for (std::map<int, SiPixelModuleStatus>::const_iterator it = newData.begin(); it != newData.end(); ++it) {
     int detid = it->first;
 
     if (fModules_.find(detid) != fModules_.end()) {  // if the detid is in the module lists

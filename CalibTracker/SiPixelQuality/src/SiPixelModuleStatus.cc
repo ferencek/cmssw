@@ -35,9 +35,9 @@ void SiPixelModuleStatus::fillFEDerror25(PixelFEDChannel ch) {
   }
 }
 // ----------------------------------------------------------------------
-int SiPixelModuleStatus::detid() { return fDetid_; }
+const int SiPixelModuleStatus::detid() const { return fDetid_; }
 // ----------------------------------------------------------------------
-int SiPixelModuleStatus::nrocs() { return fNrocs_; }
+const int SiPixelModuleStatus::nrocs() const { return fNrocs_; }
 // ----------------------------------------------------------------------
 void SiPixelModuleStatus::setDetId(int detid) { fDetid_ = detid; }
 // ----------------------------------------------------------------------
@@ -55,11 +55,11 @@ void SiPixelModuleStatus::updateFEDerror25(int iroc, bool fedError25) {
 }
 
 // ----------------------------------------------------------------------
-unsigned int SiPixelModuleStatus::digiOccROC(int iroc) { return (iroc < fNrocs_ ? fRocs_[iroc].digiOccROC() : 0); }
+const unsigned int SiPixelModuleStatus::digiOccROC(int iroc) const { return (iroc < fNrocs_ ? fRocs_[iroc].digiOccROC() : 0); }
 // ----------------------------------------------------------------------
-bool SiPixelModuleStatus::fedError25(int iroc) { return (iroc < fNrocs_ ? fRocs_[iroc].isFEDerror25() : false); }
+const bool SiPixelModuleStatus::fedError25(int iroc) const { return (iroc < fNrocs_ ? fRocs_[iroc].isFEDerror25() : false); }
 // ----------------------------------------------------------------------
-unsigned int SiPixelModuleStatus::digiOccMOD() {
+const unsigned int SiPixelModuleStatus::digiOccMOD() const {
   unsigned int count(0);
   for (int iroc = 0; iroc < fNrocs_; ++iroc) {
     count += digiOccROC(iroc);
@@ -92,6 +92,8 @@ double SiPixelModuleStatus::perRocDigiOccVar() {
 
 // ----------------------------------------------------------------------
 // Return the address not the value of ROC status
+const SiPixelRocStatus* SiPixelModuleStatus::getRoc(int iroc) const { return (iroc < fNrocs_ ? &fRocs_[iroc] : nullptr); }
+
 SiPixelRocStatus* SiPixelModuleStatus::getRoc(int iroc) { return (iroc < fNrocs_ ? &fRocs_[iroc] : nullptr); }
 
 // ----------------------------------------------------------------------
@@ -100,7 +102,7 @@ void SiPixelModuleStatus::updateModuleDIGI(int iroc, unsigned int nhits) {
     fRocs_[iroc].updateDIGI(nhits);
 }
 // ----------------------------------------------------------------------
-void SiPixelModuleStatus::updateModuleStatus(SiPixelModuleStatus newData) {
+void SiPixelModuleStatus::updateModuleStatus(const SiPixelModuleStatus& newData) {
   bool isSameModule = true;
   if (fDetid_ != newData.detid() || fNrocs_ != newData.nrocs()) {
     isSameModule = false;

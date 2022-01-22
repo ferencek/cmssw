@@ -16,7 +16,7 @@ public:
   // reset
   void resetDetectorStatus();
   // combine detector status
-  void updateDetectorStatus(SiPixelDetectorStatus newData);
+  void updateDetectorStatus(const SiPixelDetectorStatus& newData);
 
   // file I/O
   void readFromFile(std::string filename);
@@ -30,6 +30,7 @@ public:
   void addModule(int detid, SiPixelModuleStatus a);
   // get a Module
   bool findModule(int detid);
+  const SiPixelModuleStatus* getModule(int detid) const;
   SiPixelModuleStatus* getModule(int detid);
 
   // fill hit in double idc in ROC roc into module detid
@@ -38,14 +39,14 @@ public:
   void fillFEDerror25(int detid, PixelFEDChannel ch);
 
   // detector status : std:map - collection of module status
-  std::map<int, SiPixelModuleStatus> getDetectorStatus() { return fModules_; }
+  const std::map<int, SiPixelModuleStatus>& getDetectorStatus() const { return fModules_; }
   // list of ROCs with FEDerror25
   std::map<int, std::vector<int>> getFEDerror25Rocs();
   // total number of DIGIs
-  unsigned long int digiOccDET() { return fDetHits_; }
+  const unsigned long int digiOccDET() const { return fDetHits_; }
   // total processed events
   void setNevents(unsigned long int N) { ftotalevents_ = N; }
-  unsigned long int getNevents() { return ftotalevents_; }
+  const unsigned long int getNevents() const { return ftotalevents_; }
 
   // number of modules in detector
   int nmodules();
@@ -67,9 +68,9 @@ public:
   std::pair<int, int> getLSRange() { return std::make_pair(fLS0_, fLS1_); }
 
   // provide for iterating over the entire detector
-  std::map<int, SiPixelModuleStatus>::iterator begin();
-  std::map<int, SiPixelModuleStatus>::iterator next();
-  std::map<int, SiPixelModuleStatus>::iterator end();
+  const std::map<int, SiPixelModuleStatus>::const_iterator begin() const;
+  const std::map<int, SiPixelModuleStatus>::const_iterator next() const;
+  const std::map<int, SiPixelModuleStatus>::const_iterator end() const;
 
 private:
   std::map<int, SiPixelModuleStatus> fModules_;

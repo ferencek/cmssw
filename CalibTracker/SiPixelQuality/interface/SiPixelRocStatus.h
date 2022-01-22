@@ -14,9 +14,9 @@ public:
   void updateFEDerror25(bool fedError25);
 
   // occpancy
-  unsigned int digiOccROC();
+  const unsigned int digiOccROC() const;
   // FEDerror25 for stuckTBM
-  bool isFEDerror25();
+  const bool isFEDerror25() const;
 
 private:
   unsigned int fDC_;
