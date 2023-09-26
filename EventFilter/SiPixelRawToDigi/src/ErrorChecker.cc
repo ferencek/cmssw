@@ -98,6 +98,8 @@ bool ErrorChecker::checkROC(bool& errorsInEvent,
     SiPixelRawDataError error(errorWord, errorType, fedId);
     cms_uint32_t detId = errorDetIdSimple(converter, errorType, channel, roc);
     errors[detId].push_back(error);
+    // print error
+    std::cout << "CPU code ----> FED: " << fedId << " DetId: " << detId << " Error: " << errorType << std::endl;
   }
   return false;
 }

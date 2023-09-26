@@ -324,6 +324,8 @@ namespace pixelgpudetails {
       if (includeErrors and skipROC) {
         uint32_t rID = getErrRawID<debug>(fedId, ww, errorType, cablingMap);
         err->push_back(SiPixelErrorCompact{rID, ww, errorType, fedId});
+        // print error
+        printf("GPU code ----> FED: %i DetId: %i Error: %i\n", (fedId+1200), rID, errorType);
         continue;
       }
 
@@ -376,6 +378,8 @@ namespace pixelgpudetails {
           if (not rocRowColIsValid(row, col)) {
             uint8_t error = conversionError<debug>(fedId, 3);  //use the device function and fill the arrays
             err->push_back(SiPixelErrorCompact{rawId, ww, error, fedId});
+            // print error
+            printf("GPU code ----> FED: %i DetId: %i Error: %i\n", (fedId+1200), rawId, errorType);
             if constexpr (debug)
               printf("BPIX1  Error status: %i\n", error);
             continue;
@@ -392,6 +396,8 @@ namespace pixelgpudetails {
         if (includeErrors and not dcolIsValid(dcol, pxid)) {
           uint8_t error = conversionError<debug>(fedId, 3);
           err->push_back(SiPixelErrorCompact{rawId, ww, error, fedId});
+          // print error
+          printf("GPU code ----> FED: %i DetId: %i Error: %i\n", (fedId+1200), rawId, errorType);
           if constexpr (debug)
             printf("Error status: %i %d %d %d %d\n", error, dcol, pxid, fedId, roc);
           continue;
