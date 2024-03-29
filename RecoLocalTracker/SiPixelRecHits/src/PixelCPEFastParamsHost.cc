@@ -32,7 +32,7 @@ PixelCPEFastParamsHost<TrackerTraits>::PixelCPEFastParamsHost(edm::ParameterSet 
           << (*genErrorDBObject_).version();
   }
 
-  IrradiationBiasCorrection_ = irradiationBiasCorrection;
+  irradiationBiasCorrection_ = irradiationBiasCorrection;
   fillParamsForDevice();
 }
 
@@ -45,7 +45,7 @@ void PixelCPEFastParamsHost<TrackerTraits>::fillParamsForDevice() {
   buffer_->commonParams().theThicknessB = m_DetParams.front().theThickness;
   buffer_->commonParams().theThicknessE = m_DetParams.back().theThickness;
   buffer_->commonParams().numberOfLaddersInBarrel = TrackerTraits::numberOfLaddersInBarrel;
-  buffer_->commonParams().IrradiationBiasCorrection_ = IrradiationBiasCorrection_;
+  buffer_->commonParams().irradiationBiasCorrection_ = irradiationBiasCorrection_;
   LogDebug("PixelCPEFastParamsHost") << "thickness " << buffer_->commonParams().theThicknessB << ' '
                                      << buffer_->commonParams().theThicknessE;
 
@@ -388,7 +388,7 @@ void PixelCPEFastParamsHost<TrackerTraits>::errorFromTemplates(DetParam const& t
   SiPixelGenError gtempl(this->thePixelGenError_);
   int gtemplID = theDetParam.detTemplateId;
 
-  bool IrradiationBiasCorrection_ = true;
+  bool irradiationBiasCorrection_ = true;
 
   theClusterParam.qBin_ = gtempl.qbin(gtemplID,
                                       theClusterParam.cotalpha,
@@ -396,7 +396,7 @@ void PixelCPEFastParamsHost<TrackerTraits>::errorFromTemplates(DetParam const& t
                                       locBz,
                                       locBx,
                                       qclus,
-                                      IrradiationBiasCorrection_,
+                                      irradiationBiasCorrection_,
                                       theClusterParam.pixmx,
                                       theClusterParam.sigmay,
                                       theClusterParam.deltay,
