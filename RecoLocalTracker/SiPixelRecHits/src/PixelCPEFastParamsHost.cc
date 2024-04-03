@@ -388,8 +388,6 @@ void PixelCPEFastParamsHost<TrackerTraits>::errorFromTemplates(DetParam const& t
   SiPixelGenError gtempl(this->thePixelGenError_);
   int gtemplID = theDetParam.detTemplateId;
 
-  bool irradiationBiasCorrection_ = true;
-
   theClusterParam.qBin_ = gtempl.qbin(gtemplID,
                                       theClusterParam.cotalpha,
                                       theClusterParam.cotbeta,
