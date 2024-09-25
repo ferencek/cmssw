@@ -352,7 +352,7 @@ namespace pixelCPEforDevice {
     if (!comParams.irradiationBiasCorrection_) {
       return;
     }
-
+    printf("------> GPU CODE USING IBC!!!\n");
     float ibc_x = 0;
     float ibc_y = 0;
 
