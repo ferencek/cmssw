@@ -61,7 +61,12 @@ PixelCPEGenericESProducer::PixelCPEGenericESProducer(const edm::ParameterSet& p)
 
   // Use BeamSpot to compute angles for detector positions
   useBeamSpot_ = p.getParameter<bool>("useBeamSpot");
-
+  //----------------
+  if (useBeamSpot_)
+    std::cout << "------------> " << p.getParameter<std::string>("@module_label") << " INSTANCE OF PixelCPEGenericESProducer: USING BEAMSPOT :)" << std::endl;
+  else
+    std::cout << "------------> " << p.getParameter<std::string>("@module_label") << " INSTANCE OF PixelCPEGenericESProducer: NOT USING BEAMSPOT :(" << std::endl;
+  //----------------
   pset_ = p;
   auto c = setWhatProduced(this, CPEgenericMode_);
   magfieldToken_ = c.consumes(magname);
@@ -101,6 +106,9 @@ std::unique_ptr<PixelClusterParameterEstimator> PixelCPEGenericESProducer::produ
 
   if (useBeamSpot_) {
     beamSpotObjects = &iRecord.get(beamSpotToken_);
+    if (beamSpotObjects != nullptr) {
+      std::cout << "------------> " << pset_.getParameter<std::string>("@module_label") << " INSTANCE OF PixelCPEGenericESProducer: BEAMSPOTOBJECT NOT NULL" << std::endl;
+    }
   }
 
   return std::make_unique<PixelCPEGeneric>(pset_,

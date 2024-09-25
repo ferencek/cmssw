@@ -54,6 +54,10 @@ PixelCPEGeneric::PixelCPEGeneric(edm::ParameterSet const& conf,
 
   NoTemplateErrorsWhenNoTrkAngles_ = conf.getParameter<bool>("NoTemplateErrorsWhenNoTrkAngles");
   IrradiationBiasCorrection_ = conf.getParameter<bool>("IrradiationBiasCorrection");
+  if (IrradiationBiasCorrection_)
+    std::cout << "------------> " << conf.getParameter<std::string>("@module_label") << " INITIALIZED INSTANCE OF PixelCPEGeneric: USING IBC :)" << std::endl;
+  else
+    std::cout << "------------> " << conf.getParameter<std::string>("@module_label") << " INITIALIZED INSTANCE OF PixelCPEGeneric: NOT USING IBC :(" << std::endl;
   DoCosmics_ = conf.getParameter<bool>("DoCosmics");
 
   isPhase2_ = conf.getParameter<bool>("isPhase2");

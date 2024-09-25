@@ -115,7 +115,16 @@ PixelCPEBase::PixelCPEBase(edm::ParameterSet const& conf,
 
   // Use BeamSpot to compute angles for detector positions
   useBeamSpot_ = conf.getParameter<bool>("useBeamSpot");
-
+  //----------------
+  if (useBeamSpot_) {
+    std::cout << "------------> " << conf.getParameter<std::string>("@module_label") << " INITIALIZED INSTANCE OF PixelCPEBase: USING BEAMSPOT :)" << std::endl;
+    if (beamSpotObjects_ != nullptr) {
+      std::cout << "------------> " << conf.getParameter<std::string>("@module_label") << " INITIALIZED INSTANCE OF PixelCPEBase: BEAMSPOTOBJECT NOT NULL" << std::endl;
+    }
+  }
+  else
+    std::cout << "------------> " << conf.getParameter<std::string>("@module_label") << " INITIALIZED INSTANCE OF PixelCPEBase: NOT USING BEAMSPOT :(" << std::endl;
+  //----------------
   LogDebug("PixelCPEBase") << " LA constants - " << lAOffset_ << " " << lAWidthBPix_ << " " << lAWidthFPix_
                            << endl;  //dk
 
@@ -156,8 +165,10 @@ void PixelCPEBase::fillDetParams() {
     assert(p.theDet);
     assert(p.theDet->index() == int(i));
 
-    if (useBeamSpot_)
+    if (useBeamSpot_) {
       p.theOrigin = p.theDet->surface().toLocal(GlobalPoint(beamSpotObjects_->x(), beamSpotObjects_->y(), beamSpotObjects_->z()));
+      //std::cout << "x y z : " << beamSpotObjects_->x() << " " << beamSpotObjects_->y() << " " << beamSpotObjects_->z() << std::endl;
+    }
     else
       p.theOrigin = p.theDet->surface().toLocal(GlobalPoint(0, 0, 0));
 
